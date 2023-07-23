@@ -1,7 +1,8 @@
 wandb
-1.wav
+audio
 save_model_location
 results
 logs
 aclImdb
 .idea
+audio

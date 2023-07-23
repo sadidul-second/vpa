@@ -1,10 +1,21 @@
 from banglatts import BanglaTTS
-import pygame
+import sounddevice as sd
+from config import SAMPLE_RATE
 
-tts = BanglaTTS(save_location="save_model_location")
-path = tts("এবাংলায় কথা বলতে পান্ড।", voice='female', filename='1.wav')  # voice can be male or female
+sd.default.samplerate = SAMPLE_RATE
 
-pygame.mixer.init()
-my_sound = pygame.mixer.Sound('1.wav')
-my_sound.play()
-pygame.time.wait(int(my_sound.get_length() * 1000))
+
+def speech_reply(text, voice='female'):
+    tts = BanglaTTS(save_location="save_model_location")
+
+    wave = tts(
+        text, voice=voice,
+        # filename=TEMP_AUDIO,
+        convert_type="numpy"
+    )  # voice can be male or female
+    sd.play(wave, blocking=True)
+
+
+if __name__ == '__main__':
+    speech_reply("এবাংলায় কথা বলতে পান্ড।")
+    speech_reply("এবাংলায় কথা বলতে পান্ড।")
