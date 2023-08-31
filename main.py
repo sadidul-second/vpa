@@ -2,22 +2,53 @@ from stt import recognize
 from qa import generate_response
 from tts import speech_reply
 from config import INPUT_AUDIO, VOICE
+# from whisper import recognize
+import sounddevice as sd
+from config import SAMPLE_RATE, USE_MICROPHONE
+
+sd.default.samplerate = SAMPLE_RATE
+
+
+def inference(path, context):
+    prompt = recognize(path)
+    QA_input = {'question': prompt, 'context': context}
+    reply = generate_response(QA_input)
+    wave = speech_reply(reply["answer"], VOICE)
+    return wave, reply, prompt
 
 
 if __name__ == '__main__':
-    import glob
-    context = "বাংলাদেশ ও ভারতের অনেক বৃহৎ নদী পূর্ব থেকে পশ্চিমে প্রবাহিত হয়ে বঙ্গোপসাগরে পতিত হয়েছে।\
-            তন্মধ্যে উত্তরদিক থেকে গঙ্গা, মেঘনা এবং ব্রহ্মপুত্র; দক্ষিণদিক থেকে মহানদী, গোদাবরী, কৃষ্ণা, ইরাবতী এবং কাবেরী নদী উল্লেখযোগ্য।\
-            ৬৪ কিলোমিটারব্যাপী (৪০ মাইল) কৌম নদী সবচেয়ে ছোট নদী হিসেবে সরু খাল দিয়ে এবং ২,৯৪৮ কিলোমিটারব্যাপী (১,৮৩২ মাইল)\
-            বিশ্বের ২৮তম দীর্ঘ নদী হিসেবে ব্রহ্মপুত্র নদ বাংলাদেশ, চীন, নেপাল ও ভারতের মধ্য দিয়ে প্রবাহিত হয়ে বঙ্গোপসাগরে মিলিত হয়েছে।\
-            সুন্দরবন ম্যানগ্রোভ বনাঞ্চল গঙ্গা, ব্রহ্মপুত্র ও মেঘনা নদীর ব-দ্বীপকে ঘিরে গঠিত হয়েছে। মায়ানমারের (সাবেক বার্মা) ইরাওয়াদি (সংস্কৃত ইরাবতী)\
-            নদীও এ উপসাগরে মিলিত হয়েছে এবং একসময় গভীর ও ঘন ম্যানগ্রোভ বনাঞ্চলের সৃষ্টি করেছিল।"
+    c = """আগামী অক্টোবর থেকে থেকে শুরু হতে যাওয়া মৌসুমে ভারত চিনি রপ্তানি নিষিদ্ধ করতে পারে। ভারতের ৩টি সরকারি 
+    সূত্রের বরাত দিয়ে এ তথ্য জানিয়েছে বার্তা সংস্থা রয়টার্স।
 
-    for i in glob.glob(INPUT_AUDIO + "*.wav"):
-        print(i)
-        prompt = recognize(i)
-        print(f"STT: {prompt}")
-        QA_input = {'question': prompt, 'context': context}
-        reply = generate_response(QA_input)
-        print(f"reply: {reply}")
-        speech_reply(reply["answer"], VOICE)
+    রয়টার্সের প্রতিবেদনে বলা হয়েছে, বৃষ্টির অভাবে আখের ফলন কমে যাওয়ায় গত ৭ বছরের মধ্যে প্রথমবারের মতো রপ্তানি 
+    বন্ধের পরিকল্পনা করছে ভারত।
+
+    ভারত চিনি রপ্তানি বন্ধ করলে বিশ্ব বাজারে, যেমন নিউইয়র্ক ও লন্ডনে চিনির দাম আরও বাড়তে পারে এবং বিশ্বব্যাপী খাদ্য 
+    বাজারে আরও মূল্যস্ফীতির আশঙ্কা তৈরি করবে। ইতোমধ্যে কয়েক বছর ধরে চিনির দাম বেড়েছে।
+
+    নাম প্রকাশে অনিচ্ছুক একটি সরকারি সূত্র রয়টার্সকে জানিয়েছে, 'আমাদের প্রাথমিক লক্ষ্য স্থানীয় বাজারে চিনির চাহিদা 
+    পূরণ করা এবং উদ্বৃত্ত আখ থেকে ইথানল উত্পাদন করা। তাই আগামী মৌসুমে রপ্তানি করার মতো পর্যাপ্ত চিনি আমাদের কাছে 
+    থাকবে না।'
+
+    চলতি মৌসুমের ৩০ সেপ্টেম্বর পর্যন্ত মাত্র ৬১ লাখ টন চিনি রপ্তানির অনুমতি দিয়েছিল ভারত। অথচ, গত মৌসুমে রেকর্ড ১১ 
+    দশমিক ১ মিলিয়ন টন চিনি বিক্রি করেছিল দেশটি।"""
+    import glob
+
+    if USE_MICROPHONE:
+        while True:
+            try:
+                w, r, p = inference(None, c)
+                print("Question:", p)
+                print("Answer:", r["answer"])
+                print("Confidence:", r["score"])
+                sd.play(w, blocking=True)
+            except ValueError:
+                pass
+    else:
+        for i in glob.glob(INPUT_AUDIO + "*.wav"):
+            print(i)
+            w, r, p = inference(i, c)
+            print(p)
+            print(r)
+            sd.play(w, blocking=True)
