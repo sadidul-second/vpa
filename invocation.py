@@ -1,3 +1,7 @@
+import json
+import subprocess
+from playsound import playsound
+
 import requests
 import speech_recognition as sr
 import sounddevice as sd
@@ -34,30 +38,60 @@ def invoke():
         return 1
 
 
-if __name__ == '__main__':
+def invoke_ssh():
+    try:
+        ip = "185.32.161.60"
+        port = "42404"
+        print("invoking ssh...")
+        subprocess.run(
+            ["scp", "-i", "~/runpodio", "-P", f"{port}", "uploads/context.txt", f"root@{ip}:uploads/context.txt"]
+        )
+        subprocess.run(
+            ["scp", "-i", "~/runpodio", "-P", f"{port}", "uploads/audio.wav", f"root@{ip}:uploads/audio.wav"]
+        )
+        result = subprocess.run(
+            ["ssh", f"root@{ip}", "-p", f"{port}", "-i", "~/runpodio", "python", "inference.py"]
+        )
+        subprocess.run(
+            ["scp", "-i", "~/runpodio", "-P", f"{port}", f"root@{ip}:results/output.json", "results/output.json"]
+        )
 
+        # print("--" * 20)
+        # result = result.decode("utf-8")
+        # print(result)
+        # print("--" * 20)
+        # playsound("uploads/output.wav")
+        with open("results/output.json") as output:
+            print(json.load(output))
+        return 1
+    except Exception as e:
+        return 0
+
+
+if __name__ == '__main__':
     if USE_MICROPHONE:
         print("Say something...")
 
         while True:
             record(INVOCATION_AUDIO_PATH)
-            t = invoke()
-            if t == 1:
-                print("Say something...")
+            t = invoke_ssh()
+            # if t == 1:
+            #     print("Say something...")
+            break
     else:
         invoke()
 
-        # print(i)
-        # au = get_audio_from_file(i).get_wav_data()
-        # # print(au)
-        # w, r, p = inference(au, c)
-        # print(p)
-        # print(r)
-        # sd.play(w, blocking=True)
-        # # print(c)
-        # data = {"contex": c, 'somekey': 'somevalue'}
-        # d = urllib.parse.urlencode(data, encoding='utf-8')
-        # # print(d)
-        # # response = requests.post(endpoint, data=data, headers={'Content-Type': 'application/json'})
-        # response = requests.post(endpoint, data=data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
-        # print(response.content)
+    # print(i)
+    # au = get_audio_from_file(i).get_wav_data()
+    # # print(au)
+    # w, r, p = inference(au, c)
+    # print(p)
+    # print(r)
+    # sd.play(w, blocking=True)
+    # # print(c)
+    # data = {"contex": c, 'somekey': 'somevalue'}
+    # d = urllib.parse.urlencode(data, encoding='utf-8')
+    # # print(d)
+    # # response = requests.post(endpoint, data=data, headers={'Content-Type': 'application/json'})
+    # response = requests.post(endpoint, data=data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+    # print(response.content)

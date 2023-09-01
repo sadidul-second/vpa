@@ -14,8 +14,6 @@ processor = WhisperProcessor.from_pretrained(WHISPER_MODEL_OUTPUT, language=WHIS
 model = WhisperForConditionalGeneration.from_pretrained(WHISPER_MODEL_OUTPUT).to(device)
 model.config.forced_decoder_ids = None
 
-print("use microphone: ", USE_MICROPHONE)
-
 
 def recognize(path=None):
     if USE_MICROPHONE or path is None:

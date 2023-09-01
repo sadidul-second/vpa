@@ -4,8 +4,6 @@ from config import USE_MICROPHONE, INPUT_AUDIO
 
 stt = Speech2Text(model="base", use_gpu=True, framework="pt")
 
-print("use microphone: ", USE_MICROPHONE)
-
 
 def recognize(audio):
     try:
