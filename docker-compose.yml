@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  model_server_vpa:
+    container_name: model_server_vpa
+    restart: unless-stopped
+    runtime: nvidia
+    build: .
+    command: python3 app.py
+    volumes:
+      - .:/vpa
+    ports:
+      - "5000:5000"
+    networks:
+      - vpa_private_network
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+
+networks:
+  vpa_private_network:
+    driver: bridge
