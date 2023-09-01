@@ -1,20 +1,43 @@
+import numpy
+
 from stt import recognize
 from qa import generate_response
 from tts import speech_reply
 from config import INPUT_AUDIO, VOICE
 # from whisper import recognize
 import sounddevice as sd
-from config import SAMPLE_RATE, USE_MICROPHONE
+from config import SAMPLE_RATE
+import speech_recognition as sr
+from config import USE_MICROPHONE
 
 sd.default.samplerate = SAMPLE_RATE
+rec = sr.Recognizer()
 
 
-def inference(path, context):
-    prompt = recognize(path)
+def inference(audio, context):
+    prompt = recognize(audio)
     QA_input = {'question': prompt, 'context': context}
     reply = generate_response(QA_input)
     wave = speech_reply(reply["answer"], VOICE)
     return wave, reply, prompt
+
+
+def get_audio_from_mic():
+    with sr.Microphone() as source:
+        audio = rec.listen(source)
+
+    return audio
+
+
+def get_audio_from_file(path):
+    with sr.WavFile(path) as source:
+        audio = rec.record(source)
+
+    return audio
+
+
+def play_audio(wav):
+    sd.play(wav, blocking=True)
 
 
 if __name__ == '__main__':
@@ -35,20 +58,30 @@ if __name__ == '__main__':
     দশমিক ১ মিলিয়ন টন চিনি বিক্রি করেছিল দেশটি।"""
     import glob
 
+    # if USE_MICROPHONE is None:
+    #     with sr.Microphone() as source:
+    #         print("Say something!")
+    #         audio = r.listen(source)
+    # else:
+    #     with sr.WavFile(path) as source:
+    #         audio = r.record(source)
     if USE_MICROPHONE:
         while True:
             try:
-                w, r, p = inference(None, c)
+                au = get_audio_from_mic()
+                w, r, p = inference(au, c)
                 print("Question:", p)
                 print("Answer:", r["answer"])
                 print("Confidence:", r["score"])
-                sd.play(w, blocking=True)
+                play_audio(w)
             except ValueError:
                 pass
     else:
         for i in glob.glob(INPUT_AUDIO + "*.wav"):
             print(i)
-            w, r, p = inference(i, c)
+            au = get_audio_from_file(i)
+            w, r, p = inference(au, c)
             print(p)
             print(r)
-            sd.play(w, blocking=True)
+            play_audio(numpy.array(w.tolist()))
+            # sd.play(w, blocking=True)

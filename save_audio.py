@@ -8,7 +8,6 @@ def record(path, duration=3, freq=44100):
     # Start recorder with the given values of
     # duration and sample frequency
     path = path or TEST_INPUT_AUDIO
-    print("Say something...")
     recording = sd.rec(int(duration * freq), samplerate=freq, channels=2)
 
     # Record audio for the given number of seconds
@@ -16,7 +15,7 @@ def record(path, duration=3, freq=44100):
     # This will convert the NumPy array to an audio
     # file with the given sampling frequency
     wv.write(path, recording, freq, sampwidth=2)
-    print(f"saved: {path}")
+    return path
 
 
 if __name__ == '__main__':
