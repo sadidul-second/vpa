@@ -74,9 +74,7 @@ if __name__ == '__main__':
 
         while True:
             record(INVOCATION_AUDIO_PATH)
-            t = invoke_ssh()
-            # if t == 1:
-            #     print("Say something...")
+            t = invoke()
             break
     else:
         invoke()

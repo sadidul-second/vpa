@@ -68,6 +68,7 @@ if __name__ == '__main__':
     if USE_MICROPHONE:
         while True:
             try:
+                print("Say something...")
                 au = get_audio_from_mic()
                 w, r, p = inference(au, c)
                 print("Question:", p)
