@@ -3,7 +3,7 @@ from banglatts import BanglaTTS
 
 
 def speech_reply(text, voice='female'):
-    tts = BanglaTTS(save_location="save_model_location")
+    tts = BanglaTTS(save_location="save_model_location", device='cuda')
 
     # wave = tts(
     #     text, voice=voice,

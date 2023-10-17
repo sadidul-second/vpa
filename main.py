@@ -1,3 +1,6 @@
+import datetime
+import time
+
 import numpy
 
 from stt import recognize
@@ -70,12 +73,16 @@ if __name__ == '__main__':
             try:
                 print("Say something...")
                 au = get_audio_from_mic()
+                print("processing...")
+                start = time.time()
                 w, r, p = inference(au, c)
+                print("processing:", datetime.timedelta(seconds=time.time()-start))
                 print("Question:", p)
                 print("Answer:", r["answer"])
                 print("Confidence:", r["score"])
                 play_audio(w)
-            except ValueError:
+            except ValueError as e:
+                print(e)
                 pass
     else:
         for i in glob.glob(INPUT_AUDIO + "*.wav"):

@@ -1,10 +1,11 @@
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer, pipeline
+import torch
 
 model_name = "Naimul/banglabert-finetuned-squad"
 
 model = AutoModelForQuestionAnswering.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-QA = pipeline('question-answering', model=model, tokenizer=tokenizer)
+QA = pipeline('question-answering', model=model, tokenizer=tokenizer, device=torch.device("cuda:0"))
 
 
 def generate_response(prompt):

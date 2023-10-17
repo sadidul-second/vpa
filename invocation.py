@@ -1,12 +1,13 @@
+import datetime
 import json
 import subprocess
-from playsound import playsound
+import time
 
 import requests
 import speech_recognition as sr
 import sounddevice as sd
 from config import SAMPLE_RATE, USE_MICROPHONE, INVOCATION_AUDIO_PATH, INVOCATION_CONTEXT_PATH
-from main import inference, play_audio, get_audio_from_file
+from main import play_audio
 import numpy as np
 from save_audio import record
 
@@ -24,7 +25,10 @@ def invoke():
     # print(get_audio_from_file(INVOCATION_AUDIO_PATH).get_wav_data().decode("utf-8"))
     # json = {"audio": get_audio_from_file(INVOCATION_AUDIO_PATH).get_wav_data().decode("utf-8"), "context": context}
     # print("hi")
+    start = time.time()
     result = requests.post(endpoint, files=multiple_files)
+    print("processing time:", datetime.timedelta(seconds=time.time() - start))
+
     result = result.json()
     if "error" in result.keys():
         # print(result["error"])
@@ -75,7 +79,6 @@ if __name__ == '__main__':
         while True:
             record(INVOCATION_AUDIO_PATH)
             t = invoke()
-            break
     else:
         invoke()
 
@@ -88,7 +91,7 @@ if __name__ == '__main__':
     # sd.play(w, blocking=True)
     # # print(c)
     # data = {"contex": c, 'somekey': 'somevalue'}
-    # d = urllib.parse.urlencode(data, encoding='utf-8')
+    # d = urllib.parse.urlencode(data, encoding='utf-8')r
     # # print(d)
     # # response = requests.post(endpoint, data=data, headers={'Content-Type': 'application/json'})
     # response = requests.post(endpoint, data=data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
