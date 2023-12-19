@@ -1,0 +1,27 @@
+namespace: vpa
+
+nginx:
+  defines: runnable
+  inherits: nginx/reverse-proxy
+  metadata:
+    name: nginx
+    description: Nginx server acting as a reverse proxy
+    icon: https://assets.monk.io/icons/nginx-logo-FF65602A76-seeklogo.com.png
+  variables:
+    http-port:
+      type: int
+      value: '80'
+      description: ''
+    proxy-target-host:
+      type: string
+      value: connection-hostname("upstream")
+      description: ''
+    proxy-target-port:
+      type: string
+      value: connection-port("upstream")
+      description: ''
+
+stack:
+  defines: group
+  members:
+    - vpa/nginx
