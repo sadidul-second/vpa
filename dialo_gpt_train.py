@@ -27,9 +27,9 @@ print(dataset["train"][:1])
 print(dataset["validation"][:1])
 print(dataset["test"][:1])
 # Load the tokenizer and model
-tokenizer = GPT2Tokenizer.from_pretrained('microsoft/DialoGPT-medium')
+tokenizer = GPT2Tokenizer.from_pretrained(CHAT_ENGINE_MODEL_OUTPUT)
 tokenizer.pad_token = tokenizer.eos_token
-model = GPT2LMHeadModel.from_pretrained('microsoft/DialoGPT-medium')
+model = GPT2LMHeadModel.from_pretrained(CHAT_ENGINE_MODEL_OUTPUT)
 
 
 # Encode the dataset
@@ -44,7 +44,7 @@ encoded_dataset = dataset.map(encode, batched=True)
 # Define training arguments
 training_args = TrainingArguments(
     output_dir=CHAT_ENGINE_MODEL_OUTPUT,   # output directory
-    num_train_epochs=10,             # total number of training epochs
+    num_train_epochs=100,             # total number of training epochs
     per_device_train_batch_size=8,  # batch size per device during training
     per_device_eval_batch_size=16,   # batch size for evaluation
     warmup_steps=500,                # number of warmup steps for learning rate scheduler

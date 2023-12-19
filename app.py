@@ -30,6 +30,7 @@ def chat():
             audio = get_audio_from_file("uploads/audio.wav")
         # # audio = get_audio_from_file("uploads/audio.wav")
         wav, reply, prompt = inference(audio, context)
+        print(reply, prompt)
         return dict(wav=wav.tolist(), reply=reply["answer"], score=reply["score"], prompt=prompt)
     except ValueError as e:
         return dict(error=str(e))

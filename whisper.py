@@ -43,8 +43,18 @@ def recognize(path=None):
 
 if __name__ == '__main__':
     import glob
-
-    for i in glob.glob(INPUT_AUDIO + "*.wav"):
+    y_trues = [
+        "এইচার টেক্সাইল বাংলাদেশের ভেতরে একাধিক আউটল্যাটার মাধ্যমে শাড়ি, বাচ্চাদের পোশাক, মহিলাদের পোশাক এবং অন্যান্য টেক্সাইল পণ্য উৎপাদন ও বিপনন করে।",
+        "রান্না ঘরের লাইট বন্দ কর।",
+        "বেডরুমের লাইট জ্বালাও।",
+        "রহ্মপুত্র নদের দৈর্ঘ্য কত।",
+        "বেড রুমের লাইট বন্ধ করো ।",
+        "রান্না ঘরের লাইট জ্বালাও।",
+    ]
+    for x, i in enumerate(glob.glob(INPUT_AUDIO + "*.wav")):
         print(i)
         output = recognize(i)
-        print(output)
+
+        print("ytru: ", y_trues[x])
+        print("yhat: ", output[0])
+        print()

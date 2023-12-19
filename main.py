@@ -17,6 +17,8 @@ sd.default.samplerate = SAMPLE_RATE
 rec = sr.Recognizer()
 
 
+
+
 def inference(audio, context):
     prompt = recognize(audio)
     QA_input = {'question': prompt, 'context': context}

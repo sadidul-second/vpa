@@ -31,7 +31,7 @@ def invoke():
 
     result = result.json()
     if "error" in result.keys():
-        # print(result["error"])
+        print("error", result["error"])
         return 0
     else:
         print(result["prompt"])
@@ -80,6 +80,7 @@ if __name__ == '__main__':
             record(INVOCATION_AUDIO_PATH)
             t = invoke()
     else:
+        print("No microphone")
         invoke()
 
     # print(i)

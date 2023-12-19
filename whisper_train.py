@@ -15,6 +15,11 @@ from config import WHISPER_MODEL, WHISPER_MODEL_LANGUAGE, DATASET_STT, WHISPER_M
 import os
 import time
 from datetime import timedelta
+import sys
+if not sys.warnoptions:
+    import warnings
+    warnings.simplefilter("ignore")
+
 
 start = time.time()
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -126,11 +131,11 @@ model.config.suppress_tokens = []
 
 training_args = Seq2SeqTrainingArguments(
     output_dir=WHISPER_MODEL_OUTPUT,  # change to a repo name of your choice
-    per_device_train_batch_size=10,
+    per_device_train_batch_size=8,
     gradient_accumulation_steps=1,  # increase by 2x for every 2x decrease in batch size
     learning_rate=1e-5,
-    warmup_steps=500,
-    max_steps=10000,
+    warmup_steps=1000,
+    max_steps=15000,
     gradient_checkpointing=True,
     fp16=True,
     evaluation_strategy="steps",
@@ -138,7 +143,6 @@ training_args = Seq2SeqTrainingArguments(
     predict_with_generate=True,
     generation_max_length=225,
     # save_steps=10,
-    eval_steps=2000,
     logging_steps=100,
     report_to=["tensorboard"],
     # load_best_model_at_end=True,
@@ -160,13 +164,13 @@ trainer = Seq2SeqTrainer(
     compute_metrics=compute_metrics,
     tokenizer=processor.feature_extractor,
 )
+
 print("training...")
 try:
     trainer.train()
 except KeyboardInterrupt:
     print("KeyboardInterrupt")
     pass
-
 
 processor.save_pretrained(WHISPER_MODEL_OUTPUT)
 trainer.save_model()
