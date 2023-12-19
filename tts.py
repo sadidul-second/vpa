@@ -1,9 +1,9 @@
+import torch
 from banglatts import BanglaTTS
 
 
-
 def speech_reply(text, voice='female'):
-    tts = BanglaTTS(save_location="save_model_location", device='cuda')
+    tts = BanglaTTS(save_location="save_model_location", device=torch.device("cuda" if torch.cuda.is_available() else "cpu"))
 
     # wave = tts(
     #     text, voice=voice,

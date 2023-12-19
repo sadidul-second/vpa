@@ -5,7 +5,7 @@ model_name = "Naimul/banglabert-finetuned-squad"
 
 model = AutoModelForQuestionAnswering.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-QA = pipeline('question-answering', model=model, tokenizer=tokenizer, device=torch.device("cuda:0"))
+QA = pipeline('question-answering', model=model, tokenizer=tokenizer, device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
 
 def generate_response(prompt):
